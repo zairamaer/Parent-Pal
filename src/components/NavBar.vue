@@ -27,7 +27,7 @@
 export default {
   data() {
     return {
-      showOptions: false // Define showOptions property in data
+      showOptions: false 
     };
   },
   methods: {
@@ -35,7 +35,7 @@ export default {
       this.showOptions = false;
     },
     cancelHideOptions() {
-      // No need for timeout, canceling the hide directly
+      
       this.showOptions = true;
     }
   }
@@ -46,30 +46,30 @@ export default {
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
 .nav-wrapper {
-  background-color: #ffffff; /* light background for the navbar */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* subtle shadow for depth */
+  background-color: #ffffff; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
 .navbar {
   display: flex;
-  align-items: center; /* aligns items vertically */
-  justify-content: space-between; /* keeps logo on the left and links on the right */
-  padding: 20px 30px; /* consistent padding */
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 20px 30px; 
   margin: 0 auto;
-  max-width: 1200px; /* maximum width of the nav content */
+  max-width: 1200px; 
 }
 
 .logo {
-  font-size: 24px; /* large size for visibility */
-  font-weight: bold; /* makes the logo text bolder */
-  color: #2c3e50; /* similar to nav-link color for consistency */
-  text-transform: uppercase; /* transform text to uppercase */
-  letter-spacing: 2px; /* add letter spacing */
+  font-size: 24px; 
+  font-weight: bold; 
+  color: #2c3e50; 
+  text-transform: uppercase; 
+  letter-spacing: 2px; 
 }
 
 .user-icon {
-  position: relative; /* to position dropdown options */
-  cursor: pointer; /* change cursor on hover */
+  position: relative; 
+  cursor: pointer; 
 }
 
 .user-options {
@@ -80,7 +80,7 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: none;
-  padding: 10px 0; /* Adjust padding for the options */
+  padding: 10px 0; 
   min-width: 150px;
 }
 
@@ -100,33 +100,33 @@ export default {
 .nav-link {
   font-weight: 600;
   color: #2c3e50;
-  text-decoration: none; /* removes underline from links */
-  padding: 10px 5px; /* reduced horizontal padding */
-  margin: 0 5px; /* reduced margin for closer spacing */
-  transition: color 0.3s; /* smooth transition for hover effects */
+  text-decoration: none; 
+  padding: 10px 5px; 
+  margin: 0 5px; 
+  transition: color 0.3s; 
 }
 
 .nav-link:hover,
 .nav-link.router-link-exact-active {
-  color: #42b983; /* highlight color on hover and active */
+  color: #42b983; 
 }
 
 .nav-link-profile,
 .nav-link-logout {
-  font-family: 'Arial', sans-serif; /* Change font to match the font used for Home */
-  font-weight: 500; /* Adjust font weight */
-  color: #2c3e50; /* Adjust color */
-  text-decoration: none; /* Remove underline */
+  font-family: 'Arial', sans-serif; 
+  font-weight: 500; 
+  color: #2c3e50; 
+  text-decoration: none; 
 }
 
 .nav-link-profile:hover,
 .nav-link-logout:hover {
-  color: #42b983; /* Adjust hover color */
+  color: #42b983; 
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s; /* Adjust the duration of the transition */
+  transition: opacity 0.5s; 
 }
 
 .fade-enter,
@@ -136,12 +136,12 @@ export default {
 
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column; /* stacks logo and links vertically */
-    justify-content: center; /* center items */
+    flex-direction: column; 
+    justify-content: center; 
     align-items: center;
   }
   .nav-link {
-    padding: 10px 15px; /* revert padding for better touch targets on mobile */
+    padding: 10px 15px; 
   }
 }
 </style>
