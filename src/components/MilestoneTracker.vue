@@ -20,6 +20,15 @@
             <select v-model="newMilestone.type" id="milestone-type">
               <option value="physical">Physical</option>
               <option value="cognitive">Cognitive</option>
+              <option value="social_emotional">Social/Emotional</option>
+              <option value="language_communication">Language/Communication</option>
+            </select>
+            <!-- Add the month select dropdown -->
+            <select v-model="newMilestone.month" id="milestone-month">
+              <option value="2">2 Month</option>
+              <option value="4">4 Months</option>
+              <option value="6">6 Months</option>
+              <option value="9">9 Months</option>
             </select>
             <input type="file" @change="handleImageUpload" accept="image/*">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -28,31 +37,45 @@
       </div>
     </transition>
 
-      <!-- Edit milestone form -->
-  <transition name="fade">
-    <div v-if="showEditForm" class="modal">
-      <div class="modal-content">
-        <button @click="cancelEdit" class="close">&times;</button>
-        <h2>Edit Milestone</h2>
-        <form @submit.prevent="updateMilestone" class="form">
-          <input type="text" v-model="editedMilestone.title" placeholder="Enter milestone title" required>
-          <input type="date" v-model="editedMilestone.date" :max="maxDate" required>
-          <select v-model="editedMilestone.type">
-            <option value="physical">Physical</option>
-            <option value="cognitive">Cognitive</option>
-          </select>
-          <input type="file" @change="handleEditedImageUpload" accept="image/*">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
+    <!-- Edit milestone form -->
+    <transition name="fade">
+      <div v-if="showEditForm" class="modal">
+        <div class="modal-content">
+          <button @click="cancelEdit" class="close">&times;</button>
+          <h2>Edit Milestone</h2>
+          <form @submit.prevent="updateMilestone" class="form">
+            <input type="text" v-model="editedMilestone.title" placeholder="Enter milestone title" required>
+            <input type="date" v-model="editedMilestone.date" :max="maxDate" required>
+            <select v-model="editedMilestone.type">
+              <option value="physical">Physical</option>
+              <option value="cognitive">Cognitive</option>
+            </select>
+            <input type="file" @change="handleEditedImageUpload" accept="image/*">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
       </div>
-    </div>
-  </transition>
+    </transition>
 
     <div class="filter-section">
       <label for="milestone-type-filter">Filter by Type:</label>
       <select v-model="selectedType" id="milestone-type-filter" class="select">
         <option value="physical">Physical</option>
         <option value="cognitive">Cognitive</option>
+        <option value="social_emotional">Social/Emotional</option>
+        <option value="language_communication">Language/Communication</option>
+      </select>
+    </div>
+
+    <!-- Add milestones per month dropdown -->
+    <div class="filter-section">
+      <label for="milestone-month-filter">Filter by Month:</label>
+      <select v-model="selectedMonth" id="milestone-month-filter" class="select">
+        <option value="">All</option>
+        <option value="2">2 Months</option>
+        <option value="4">4 Months</option>
+        <option value="6">6 Months</option>
+        <option value="9">9 Months</option>
       </select>
     </div>
 
@@ -76,7 +99,6 @@
       </li>
     </ul>
 
-
     <div v-if="showLightbox" class="lightbox" @click="closeLightbox">
       <img :src="selectedImage" alt="Milestone Image" class="lightbox-image">
     </div>
@@ -87,12 +109,17 @@
       <span>{{ currentPage }} of {{ totalPages }}</span>
       <button @click="nextPage" :disabled="currentPage === totalPages" class="btn btn-secondary">Next</button>
     </div>
+
+    <!-- Link to CDC Milestones -->
+    <div class="more-info">
+      <p>For more information about developmental milestones, visit the CDC website:</p>
+      <a href="https://www.cdc.gov/ncbddd/actearly/milestones/milestones-2mo.html" target="_blank" rel="noopener noreferrer">CDC Milestones</a>
+    </div>
   </div>
 </template>
 
-
 <script>
-import Navbar from '@/components/NavBar.vue'; // Correct the import path to match the file name
+import Navbar from '@/components/NavBar.vue'; 
 
 export default {
   components: {
@@ -100,8 +127,15 @@ export default {
   },
   data() {
     return {
-      milestones: [],
-      newMilestone: { title: '', date: '', imageUrl: '', type: 'physical' },
+      milestones: [
+      { title: 'Holds head up on tummy', type: 'physical', month: 2 },
+      { title: 'Moves arms and legs', type: 'physical', month: 2 },
+      { title: 'Opens hands briefly', type: 'physical', month: 2 },
+      { title: 'Brings hands to mouth', type: 'physical', month: 4 },
+      { title: 'Holds a toy when you put it in his hand ', type: 'physical', month: 4 },
+      { title: 'Uses his arm to swing at toys', type: 'physical', month: 4 },
+      ],
+      newMilestone: { title: '', date: '', imageUrl: '', type: 'physical', month: '' },
       editedMilestone: { title: '', date: '', imageUrl: '', type: 'physical' },
       showForm: false,
       showEditForm: false,
@@ -111,7 +145,8 @@ export default {
       currentPage: 1,
       milestonesPerPage: 10,
       sortAscending: true,
-      selectedType: 'physical'
+      selectedType: 'physical',
+      selectedMonth: ''
     };
   },
   computed: {
@@ -123,55 +158,55 @@ export default {
       return Math.ceil(this.milestones.length / this.milestonesPerPage);
     },
     filteredMilestones() {
-      return this.milestones.filter(milestone => milestone.type === this.selectedType);
+      return this.milestones.filter(milestone =>
+        (milestone.type === this.selectedType || this.selectedType === 'all') &&
+        (this.selectedMonth === '' || milestone.month == this.selectedMonth)
+      );
     },
     sortButtonText() {
       return this.sortAscending ? 'Sort Oldest First' : 'Sort Newest First';
     }
   },
   methods: {
-    // Method to add a new milestone
     addMilestone() {
       if (this.newMilestone.title.trim() && this.newMilestone.date.trim()) {
         this.milestones.push({ ...this.newMilestone });
         this.newMilestone.title = '';
         this.newMilestone.date = '';
         this.newMilestone.imageUrl = '';
-        this.newMilestone.type = 'physical'; // Reset type to physical after adding
-        this.showForm = false; // Hide the form after submission
+        this.newMilestone.type = 'physical';
+        this.newMilestone.month = '';
+        this.showForm = false;
       }
     },
-    // Method to delete a milestone
     deleteMilestone(index) {
       this.milestones.splice(index, 1);
     },
-    // Method to edit a milestone
     editMilestone(index) {
       this.editedMilestone = { ...this.milestones[index] };
       this.editIndex = index;
       this.showEditForm = true;
     },
-    // Method to cancel editing
     cancelEdit() {
       this.showEditForm = false;
       this.editIndex = null;
     },
-    // Method to update a milestone after editing
     updateMilestone() {
       if (this.editedMilestone.title.trim() && this.editedMilestone.date.trim()) {
         this.milestones.splice(this.editIndex, 1, { ...this.editedMilestone });
         this.showEditForm = false;
         this.editIndex = null;
-        // Reset editedMilestone object
         this.editedMilestone = { title: '', date: '', imageUrl: '', type: 'physical' };
       }
     },
-    // Method to format date
     formattedDate(date) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(date).toLocaleDateString('en-US', options);
+      if (date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+      } else {
+        return "Add Date";
+      }
     },
-    // Method to handle image upload for adding a milestone
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -182,7 +217,6 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    // Method to handle image upload for editing a milestone
     handleEditedImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -193,36 +227,30 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    // Method to show image in lightbox
     showImage(imageUrl) {
       this.selectedImage = imageUrl;
       this.showLightbox = true;
     },
-    // Method to close lightbox
     closeLightbox() {
       this.showLightbox = false;
       this.selectedImage = '';
     },
-    // Method to sort milestones by date
     sortByDate() {
       this.milestones.sort((a, b) => {
         return this.sortAscending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
       });
       this.sortAscending = !this.sortAscending;
     },
-    // Method to go to the next page
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
       }
     },
-    // Method to go to the previous page
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
     },
-    // Method to hide the form
     hideForm() {
       this.showForm = false;
     }
@@ -230,9 +258,8 @@ export default {
 };
 </script>
 
-
 <style scoped>
-/* Modal styles */
+
 .modal {
   display: block;
   position: fixed;
@@ -274,8 +301,6 @@ export default {
   color: black;
   text-decoration: none;
 }
-
-/* End of Modal styles */
 
 .milestone-container {
   max-width: 600px;
@@ -384,7 +409,7 @@ h1 {
 }
 
 .milestone-actions {
-  margin-left: 20px; /* Adjust spacing between content and actions */
+  margin-left: 20px; 
 }
 
 .lightbox {
@@ -418,7 +443,6 @@ h1 {
   margin: 0 5px;
 }
 
-/* Sorting Button Styles */
 .sort-button-container {
   position: relative;
 }
@@ -501,10 +525,8 @@ input, select {
   opacity: 0.9;
 }
 
-/* Milestone list and image styling */
-
 .milestone-actions button {
-  margin-right: 10px; /* Add margin between the "Edit" and "Delete" buttons */
+  margin-right: 10px; 
 }
 
 .milestone-list {
@@ -519,25 +541,23 @@ input, select {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   display: flex;
-  align-items: center; /* Align items in a row in the center */
+  align-items: center; 
 }
 
 .milestone-image {
-  max-width: 100px; /* Set a maximum width */
-  max-height: 100px; /* Set a maximum height */
-  width: auto; /* Allow the width to adjust according to the aspect ratio */
-  height: auto; /* Allow the height to adjust according to the aspect ratio */
-  border-radius: 5px; /* Rounded corners for the image */
-  margin-left: 50px; /* Space between the image and text */
+  max-width: 100px; 
+  max-height: 100px; 
+  width: auto; 
+  height: auto; 
+  border-radius: 5px; 
+  margin-left: 50px;
 }
 
-
-/* Styling for article content within a milestone for better spacing and alignment */
 .milestone-info {
-  flex: 1; /* Take remaining space */
+  flex: 1; 
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align items to the start (left) */
+  align-items: flex-start; 
 }
 
 .title-container {
@@ -566,25 +586,25 @@ input, select {
   color: #333;
   margin-bottom: 5px;
   margin-top: 0;
-  flex: 1; /* Allow title to grow with content */
-  overflow: hidden; /* Hide overflow */
-  white-space: nowrap; /* Prevent wrapping */
-  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  flex: 1; 
+  overflow: hidden; 
+  white-space: nowrap; 
+  text-overflow: ellipsis; 
   margin-left: 20px;
-  align-self: flex-start; /* Align the title to the start (left) */
+  align-self: flex-start; 
 }
 
 .milestone-date {
   font-size: 14px;
   color: #666;
-  margin: 0; /* Reset margin for better spacing */
+  margin: 0; 
   margin-left:10px;
-  align-self: flex-start; /* Align the title to the start (left) */
+  align-self: flex-start; 
 }
 
-/* Ensure the lightbox image isn't too large */
+
 .lightbox-image {
-  max-width: 50%; /* Smaller size for better viewing experience */
+  max-width: 50%; 
   max-height: 80%;
   border-radius: 5px;
 }
@@ -605,5 +625,25 @@ input, select {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+}
+
+.more-info {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.more-info p {
+  margin-bottom: 10px;
+}
+
+.more-info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.more-info a:hover {
+  text-decoration: underline;
 }
 </style>

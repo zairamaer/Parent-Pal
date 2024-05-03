@@ -25,8 +25,8 @@
             <div class="post-meta">
               <span class="post-author">Anonymous</span>
               <span class="post-date">{{ post.date }}</span>
-              <button @click="openEditModal(post)">Edit</button> <!-- Edit button -->
-              <button @click="deletePost(index)">Delete</button> <!-- Delete button -->
+              <button @click="openEditModal(post)">Edit</button> 
+              <button @click="deletePost(index)">Delete</button> 
             </div>
           </div>
           <div class="post-content">
@@ -184,7 +184,6 @@ export default {
 </script>
 
 <style scoped>
-/* Parental Support Forum Styles */
 
 .parental-support-forum {
   max-width: 800px;

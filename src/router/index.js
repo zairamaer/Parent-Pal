@@ -1,9 +1,11 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import AboutView from '@/views/AboutView.vue';
 import MilestoneTracker from '@/components/MilestoneTracker.vue';
 import ForumView from '@/components/ForumView.vue';
 import LoginView from '@/views/LoginView.vue';
+import AnalyticsView from '@/components/AnalyticsView.vue';
+import ProfileManage from '@/components/ProfileManage.vue';
 
 const routes = [
   {
@@ -31,10 +33,20 @@ const routes = [
     name: 'login-view',
     component: LoginView
   },
+  {
+    path: '/analytics',
+    name: 'analytics',
+    component: AnalyticsView
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileManage
+  },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(), // Use createWebHistory for history mode
   routes
 });
 

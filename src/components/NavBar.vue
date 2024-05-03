@@ -2,10 +2,13 @@
   <div class="nav-wrapper">
     <nav class="navbar">
       <div class="logo">ParentPal</div>
-      <router-link to="/" class="nav-link">Home</router-link>
-      <router-link to="/about" class="nav-link">About</router-link>
-      <router-link to="/milestone-tracker" class="nav-link">Milestone Tracker</router-link>
-      <router-link to="/forum-view" class="nav-link">Forum</router-link>
+      <div class="nav-links">
+        <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/about" class="nav-link">About</router-link>
+        <router-link to="/milestone-tracker" class="nav-link">Milestone Tracker</router-link>
+        <router-link to="/forum-view" class="nav-link">Forum</router-link>
+        <router-link to="/analytics" class="nav-link">Analytics</router-link>
+      </div>
       <div class="user-icon" @mouseover="showOptions = true">
         <i class="fas fa-user"></i>
         <transition name="fade">
@@ -35,7 +38,6 @@ export default {
       this.showOptions = false;
     },
     cancelHideOptions() {
-      
       this.showOptions = true;
     }
   }
@@ -67,6 +69,25 @@ export default {
   letter-spacing: 2px; 
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  margin-left: 500px;
+}
+
+.nav-link {
+  margin: 0 25px; 
+  font-weight: 600;
+  color: #2c3e50;
+  text-decoration: none; 
+  transition: color 0.3s; 
+}
+
+.nav-link:hover,
+.nav-link.router-link-exact-active {
+  color: #42b983; 
+}
+
 .user-icon {
   position: relative; 
   cursor: pointer; 
@@ -85,7 +106,7 @@ export default {
 }
 
 .user-icon:hover .user-options {
-  display: block; /* show options on hover */
+  display: block; 
 }
 
 .option {
@@ -95,20 +116,6 @@ export default {
 
 .option:hover {
   background-color: #f0f0f0;
-}
-
-.nav-link {
-  font-weight: 600;
-  color: #2c3e50;
-  text-decoration: none; 
-  padding: 10px 5px; 
-  margin: 0 5px; 
-  transition: color 0.3s; 
-}
-
-.nav-link:hover,
-.nav-link.router-link-exact-active {
-  color: #42b983; 
 }
 
 .nav-link-profile,
