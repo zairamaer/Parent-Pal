@@ -6,6 +6,7 @@ import ForumView from '@/components/ForumView.vue';
 import LoginView from '@/views/LoginView.vue';
 import AnalyticsView from '@/components/AnalyticsView.vue';
 import ProfileManage from '@/components/ProfileManage.vue';
+import SignUp from '@/components/SignUp.vue';
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileManage
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignUp
   },
 ];
 
