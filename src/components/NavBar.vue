@@ -17,7 +17,7 @@
               <router-link to="/profile" class="nav-link-profile">View Profile</router-link>
             </div>
             <div class="option">
-              <router-link to="/logout" class="nav-link-logout">Logout</router-link>
+              <router-link to="/login" class="nav-link-logout">Logout</router-link>
             </div>
           </div>
         </transition>

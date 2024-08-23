@@ -1,5 +1,40 @@
 <template>
   <Navbar /> <!-- Enhanced navigation bar component -->
+
+<!-- New Div for Adding and Selecting Child -->
+<div class="page-layout">
+  <div class="child-management">
+
+    <div class="child-select">
+      <label for="child-select">Select Child:</label>
+      <select v-model="selectedChild" id="child-select">
+        <option v-for="child in children" :key="child.id" :value="child.id">
+          {{ child.name }} -  {{ child.age }}
+        </option>
+      </select>
+    </div>
+    
+    <button @click="showAddChildModal = true" class="btn btn-primary">Add Child</button>
+
+    <!-- Modal -->
+    <div v-if="showAddChildModal" class="modal" @click.self="closeModal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <h2>Add Child</h2>
+        <form @submit.prevent="addChild">
+          <input type="text" v-model="newChild.name" placeholder="Enter child's name" required class="inputField">
+          <input type="number" v-model="newChild.age" placeholder="Enter child's age" required class="inputField">
+          <select v-model="newChild.ageUnit" class="inputField">
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Add Child</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
   <div class="container">
     <!-- Header -->
     <header class="header">
@@ -14,7 +49,7 @@
 <transition name="fade">
   <div v-if="showForm" class="modal">
     <div class="modal-content">
-      <button @click="cancelEdit" class="close">&times;</button> <!-- Modify this line -->
+      <span class="close" @click="closeModal">&times;</span>
       <h2>Add New Milestone</h2>
       <form @submit.prevent="addMilestone" class="form">
         <input type="text" v-model="newMilestone.title" id="milestone-title" placeholder="Enter milestone title" required>
@@ -42,7 +77,7 @@
     <transition name="fade">
       <div v-if="showEditForm" class="modal">
         <div class="modal-content">
-          <button @click="cancelEdit" class="close">&times;</button>
+          <span class="close" @click="closeModal">&times;</span>
           <h2>Edit Milestone</h2>
           <form @submit.prevent="updateMilestone" class="form">
             <input type="text" v-model="editedMilestone.title" placeholder="Enter milestone title" required>
@@ -128,6 +163,7 @@
       <a href="https://www.cdc.gov/ncbddd/actearly/milestones/milestones-2mo.html" target="_blank" rel="noopener noreferrer">CDC Milestones</a>
     </div>
   </div>
+ </div>
 </template>
 
 <script>
@@ -143,9 +179,17 @@ export default {
       newMilestone: { title: '', date: '', imageUrl: '', type: 'physical', month: '' },
       editedMilestone: { title: '', date: '', imageUrl: '', type: 'physical', month: '' },
       showForm: false,
+      showAddChildModal: false,
       showEditForm: false,
-      editIndex: null,
       showLightbox: false,
+      selectedChild: null,
+      newChild: {
+        name: '',
+        age: '',
+      ageUnit: 'years' // Default unit
+      },
+      children: [],
+      editIndex: null,
       selectedImage: '',
       currentPage: 1,
       milestonesPerPage: 10,
@@ -173,6 +217,26 @@ export default {
     }
   },
   methods: {
+    addChild() {
+    if (this.newChild.name.trim() && this.newChild.age > 0) {
+      this.children.push({
+        id: Date.now(), // Unique ID for each child
+        name: this.newChild.name,
+        age: this.newChild.age,
+        ageUnit: this.newChild.ageUnit
+      });
+      this.newChild.name = '';
+      this.newChild.age = '';
+      this.newChild.ageUnit = 'years'; // Reset to default
+      this.showAddChildModal = false; // Close the modal
+    }
+  },
+  closeModal() {
+    this.showAddChildModal = false;
+    this.showForm = false;
+    this.showEditForm = false;
+  },
+
     addMilestone() {
       if (this.newMilestone.title.trim() && this.newMilestone.date.trim()) {
         this.newMilestones.push({ ...this.newMilestone, fromNew: true });
@@ -280,26 +344,89 @@ export default {
 
 <style scoped>
 
+/* Modal */
 .modal {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: fixed;
   z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
 }
 
+/* Modal Content */
 .modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 50px;
-  border: 1px solid #888;
+  background-color: #fff;
+  padding: 20px;
   border-radius: 10px;
-  width: 85%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
   position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between elements */
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* Form Inputs */
+.add-child-form input,
+.add-child-form select {
+  width: 100%;
+  padding: 10px;
+  margin: 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #218838;
 }
 
 .form-container {
@@ -387,7 +514,6 @@ h1 {
   list-style: none;
   padding: 0;
 }
-
 
 .milestone-item {
   display: flex;
@@ -483,12 +609,11 @@ h1 {
 
 .container {
   max-width: 800px;
-  margin: 2rem auto;
-  background: #f9f9f9;
   padding: 20px;
+  background: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+} 
 
 .header {
   display: flex;
@@ -622,7 +747,6 @@ input, select {
   align-self: flex-start; 
 }
 
-
 .lightbox-image {
   max-width: 50%; 
   max-height: 80%;
@@ -666,4 +790,105 @@ input, select {
 .more-info a:hover {
   text-decoration: underline;
 }
+
+/* Child management styling */
+.child-management {
+  width: 300px; /* Fixed width */
+  height: 200px; /* Fixed height */
+  padding: 20px; /* Maintain padding */ 
+  background-color: #f9f9f9;
+  border-right: 2px solid #ddd;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  margin-left:12.5%;
+}
+
+.child-management .add-child-form,
+.child-management .child-select {
+  margin-bottom: 20px;
+}
+
+.child-management .add-child-form input {
+  margin-right: 10px;
+}
+
+.child-management .child-select label {
+  font-size: 16px;
+  color: #333;
+}
+
+.child-management .child-select select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.child-management h2 {
+  font-size: 22px;
+  color: #333;
+  margin-top: 30px;
+}
+
+/* Child Select */
+.child-select {
+  margin-bottom: 20px;
+}
+
+.child-select label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top:10px;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.page-layout {
+  margin-top: 40px;
+  display: flex;
+  gap: 5%;
+  padding: 20px;
+}
+
+/* Add Child Button */
+.add-child-button {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-child-button:hover {
+  background-color: #0056b3;
+}
+
 </style>
+
+
